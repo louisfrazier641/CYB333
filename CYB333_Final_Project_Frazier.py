@@ -2,7 +2,10 @@
 ### Author: John Louis Frazier  
 ### Course: CYB333 Security Automation
 ### Instructor: Professor Eric Rivard
-### Description: This script implements a simple Intrusion Detection System (IDS) using Python. It monitors system logs, analyzes network traffic, and detects anomalies using machine learning techniques. The script uses libraries such as Scapy for network packet analysis and Pyshark for packet capture. It also utilizes the Isolation Forest algorithm from scikit-learn for anomaly detection.
+### Description: This script implements a simple Intrusion Detection System (IDS) using Python. 
+### It monitors system logs, analyzes network traffic, and detects anomalies using machine learning techniques. 
+### The script uses libraries such as Scapy for network packet analysis and Pyshark for packet capture. 
+### It also utilizes the Isolation Forest algorithm from scikit-learn for anomaly detection.
 ### Note: This is a simplified example and should not be used in production without further enhancements and security measures.
 
 # Install necessary Python packages
@@ -14,13 +17,12 @@ required_packages = ["pandas", "loguru", "scapy", "pyshark", "scikit-learn"]
 for package in required_packages:
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-
 import os
-import pandas as pd # type: ignore
-from loguru import logger # type: ignore
-import scapy.all as scapy # type: ignore
-import pyshark # type: ignore
-from sklearn.ensemble import IsolationForest # type: ignore
+import pandas as pd  # type: ignore
+from loguru import logger  # type: ignore
+import scapy.all as scapy  # type: ignore
+import pyshark  # type: ignore
+from sklearn.ensemble import IsolationForest  # type: ignore
 import time
 
 # Verify required files exist
@@ -42,6 +44,8 @@ print(f"Available interfaces: {available_interfaces}")
 interface_name = available_interfaces[0]  # Select the first interface as an example
 
 # Function to monitor system logs
+# This function scans the system log file for suspicious patterns (e.g., failed login attempts, unauthorized access).
+# If suspicious activity is detected, it logs a warning and prints the details to the console.
 def monitor_logs(log_file):
     suspicious_patterns = ["failed login", "unauthorized access", "malware detected"]
     detected_issues = []
@@ -64,6 +68,8 @@ def monitor_logs(log_file):
         print("No suspicious activities found in logs.")
 
 # Function to analyze network traffic
+# This function captures network packets using Scapy and analyzes them for HTTP traffic and malicious content.
+# It logs details about captured packets and prints a summary of HTTP and malicious traffic.
 def analyze_network_traffic(interface):
     packets = scapy.sniff(iface=interface, count=10)
     http_traffic_count = 0
@@ -85,6 +91,7 @@ def analyze_network_traffic(interface):
     print(f"Network traffic analysis completed. HTTP traffic: {http_traffic_count}, Malicious packets: {malicious_count}")
 
 # Function to analyze network traffic using Pyshark
+# This function captures network packets using Pyshark and checks for malicious content in HTTP traffic.
 def analyze_network_traffic_pyshark(interface):
     capture = pyshark.LiveCapture(interface=interface)
     for packet in capture.sniff_continuously(packet_count=10):
@@ -94,6 +101,8 @@ def analyze_network_traffic_pyshark(interface):
                 logger.error(f"Malicious content detected in HTTP traffic: {packet.http.file_data}")
 
 # Function to detect anomalies in network traffic using Isolation Forest
+# This function uses the Isolation Forest algorithm to detect anomalies in the provided network traffic data.
+# It logs details about detected anomalies and prints a summary.
 def detect_anomalies(data):
     model = IsolationForest(contamination=0.1)
     model.fit(data)
@@ -107,6 +116,7 @@ def detect_anomalies(data):
             logger.warning(f"Anomaly detected at index {i}: {data.iloc[i]}")
 
 # Function to load and preprocess data for anomaly detection
+# This function loads network traffic data from a CSV file and preprocesses it for anomaly detection.
 def load_and_preprocess_data(file_path):
     try:
         data = pd.read_csv(file_path)
@@ -118,6 +128,7 @@ def load_and_preprocess_data(file_path):
         return pd.DataFrame()  # Return an empty DataFrame if there's an error
 
 # Function to send alerts
+# This function sends an alert message and logs it as an error.
 def send_alert(message):
     print(f"ALERT: {message}")
     logger.error(message)
